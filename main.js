@@ -20,6 +20,23 @@ class LinearEquation {
         this.solve(question);
     }
 
+    showStep(step) {
+        console.log(`Step ${this.step}: ${step}`);
+        return this.addToHTML(`Step ${this.step}: ${step} `, "step");
+    }
+
+    showStepInfo(info) {
+        console.log(info);
+        return this.addToHTML(info, "step-info");
+    }
+
+    addToHTML(content, type) {
+        const response = document.createElement("li");
+        response.className = type;
+        response.textContent = content;
+        this.responses.appendChild(response);
+    }
+
     sanitize(equation) {
         const equationWithoutSpaces = equation.trim().split(" ").join("");
         if (!equationWithoutSpaces || !equation.includes("=")) {
@@ -51,22 +68,48 @@ class LinearEquation {
         // 2x + 3x = 3 + 5 ✅
         // 7x - 2 = 21 ✅
         // x + 1 + 2 = 3 ✅
-        // TODO: write algorithm to solve x + 2 = 3x
+        // x + 2 = 3x ✅
+        // x + 2 = 3x + 5 ✅
         // TODO: write algorithm to solve 2(4x + 3) + 6 = 24 -4x
 
         let [left, right] = this.sanitize(equation).split("=");
         let answer;
 
+        if (this.containsVariableOnBothSies(left, right)) {
+            // if boths sides contain a variable
+            let rightExpression = right
+                .replaceAll("+", "++")
+                .replaceAll("-", "+-")
+                .split("+");
+            const rightExpressionVariables = rightExpression.filter((value) => {
+                if (this.containVariable(value)) return true;
+                return false;
+            });
+
+            const rightWithoutVariables = rightExpression.filter((value) => {
+                if (value && !rightExpressionVariables.includes(value))
+                    return true;
+                return false;
+            });
+
+            [left, right] = this.resolveVariablesOnRightSide(
+                left,
+                rightExpressionVariables,
+                rightWithoutVariables,
+                right
+            );
+        }
+
         if (
             // check if left contains only a number and right has a variable
             this.containNumberOnly(left) &&
-            this.containVariable(right, "x")
+            this.containVariable(right, this.variable)
         ) {
             answer = this.resolveNumberAndVariableSide(left, right);
         } else if (
             // check if right contains only a number and left has a variable
             this.containNumberOnly(right) &&
-            this.containVariable(left, "x")
+            this.containVariable(left, this.variable)
         ) {
             answer = this.resolveNumberAndVariableSide(right, left);
         }
@@ -75,21 +118,41 @@ class LinearEquation {
         this.showStepInfo(`${this.variable} = ${answer}`);
     }
 
-    showStep(step) {
-        console.log(`Step ${this.step}: ${step}`);
-        return this.addToHTML(`Step ${this.step}: ${step} `, "step");
+    resolveVariablesOnRightSide(
+        leftSide,
+        variablesToAdd,
+        newRightSide,
+        rightSide
+    ) {
+        // move the variables on the right side to the left side
+        let expressionToAdd = "";
+        this.showStep("Collect like terms");
+        this.showStepInfo(
+            `Move ${variablesToAdd.join(", ")} to the left side of the equation`
+        );
+        this.showStepInfo(`${leftSide} = ${rightSide}`);
+
+        variablesToAdd.forEach((value) => {
+            expressionToAdd += this.invertAddOrSubtract(this.addSign(value));
+        });
+
+        let newRightExpression = newRightSide
+            .map((value) => this.addSign(value))
+            .join("");
+        if (!newRightExpression) newRightExpression = "0";
+
+        const newLeftExpression = `${leftSide}${expressionToAdd}`;
+        this.showStepInfo(`${newLeftExpression} = ${newRightExpression}`);
+
+        this.step++;
+        return [newLeftExpression, newRightExpression];
     }
 
-    showStepInfo(info) {
-        console.log(info);
-        return this.addToHTML(info, "step-info");
-    }
-
-    addToHTML(content, type) {
-        const response = document.createElement("li");
-        response.className = type;
-        response.textContent = content;
-        this.responses.appendChild(response);
+    containsVariableOnBothSies(leftExpression, rightExpression) {
+        return (
+            this.containVariable(leftExpression) &&
+            this.containVariable(rightExpression)
+        );
     }
 
     resolveNumberAndVariableSide(numberSide, variableSide) {
@@ -156,6 +219,7 @@ class LinearEquation {
                 `${variableSum}${this.variable} = ${string} + ${numberToAdd}`
             );
             sum = Function("return " + string + numberToAdd)();
+            this.showStepInfo(`${variableSum}${this.variable} = ${sum}`);
             return sum;
         } else {
             this.showStepInfo(`${variableSum}${this.variable} = ${string}`);
@@ -163,7 +227,6 @@ class LinearEquation {
         }
 
         if (sum !== parseInt(string)) {
-            console.log("Should't", sum, string);
             this.showStepInfo(`${variableSum}${this.variable} = ${sum}`);
         }
         return sum;
@@ -260,12 +323,12 @@ class LinearEquation {
                 )} = ${equationOtherSide}`
             );
 
-            if (!parseInt(numbersTotal)) {
-                // if the total is zero
-                this.showStepInfo(
-                    `${variablesSum}${this.variable} = ${equationOtherSide}`
-                );
-            }
+            // if (!parseInt(numbersTotal)) {
+            //     // if the total is zero
+            //     this.showStepInfo(
+            //         `${variablesSum}${this.variable} = ${equationOtherSide}`
+            //     );
+            // }
             this.step++;
             numberToAddToBothSides = this.invertAddOrSubtract(numbersTotal);
         }
@@ -289,9 +352,9 @@ class LinearEquation {
         this.showStepInfo(
             "Cancel terms that are in both the numerator and denominator"
         );
-        this.showStepInfo(
-            `${divisor}${this.variable} = ${dividend}/${divisor}`
-        );
+        // this.showStepInfo(
+        //     `${divisor}${this.variable} = ${dividend}/${divisor}`
+        // );
         this.showStepInfo(`${this.variable} = ${dividend}/${divisor}`);
         this.step++;
 
