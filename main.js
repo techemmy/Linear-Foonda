@@ -70,7 +70,7 @@ class LinearEquation {
         // x + 1 + 2 = 3 ✅
         // x + 2 = 3x ✅
         // x + 2 = 3x + 5 ✅
-        // TODO: write algorithm to solve 2(4x + 3) + 6 = 24 -4x
+        // TODO: tweak algorithm to solve 2(4x + 3) + 6 = 24 -4x
 
         let [left, right] = this.sanitize(equation).split("=");
         let answer;
