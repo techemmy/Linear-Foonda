@@ -122,7 +122,7 @@ class LinearEquation {
 
     resolveBracketDistribution(leftExpression, rightExpression) {
         // TODO: add steps to expand bracket
-        const roundBracketsRegex = /[-/+]?[0-9]+\((.*?)\)/g;
+        const roundBracketsRegex = /[-/+]?[0-9]?\((.*?)\)/g;
         let leftResolved, rightResolved;
 
         let leftBracketExpressions = leftExpression.match(roundBracketsRegex);
@@ -155,7 +155,6 @@ class LinearEquation {
     }
 
     resolveBrackets(bracketExpressions, originalExpressionArray) {
-        // TODO: handle cases like -(x+1)
         let counter = 0,
             bracketExpanded = 0;
         let expanded = "";
@@ -193,7 +192,10 @@ class LinearEquation {
 
         let expandedBracket = "";
 
-        const coefficient = signedBracketExpression.split("(")[0]; // +2
+        let coefficient = signedBracketExpression.split("(")[0]; // +2
+        // to handle equations that starts with symbols
+        if (coefficient == "-") coefficient = "-1"; // e.g - (x + 1)
+        if (coefficient == "+") coefficient = "+1"; // e.g + (x + 1)
         let insideBracketExpression = signedBracketExpression
             .split("(")[1]
             .replace(")", ""); // '4x+3'
