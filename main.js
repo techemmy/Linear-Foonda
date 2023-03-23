@@ -124,6 +124,8 @@ class LinearEquation {
 
         this.showStep("Solution");
         this.showStepInfo(`${this.variable} = ${answer}`);
+
+        return answer;
     }
 
     resolveBracketDistribution(leftExpression, rightExpression) {
