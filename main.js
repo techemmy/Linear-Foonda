@@ -70,10 +70,12 @@ class LinearEquation {
         // x + 1 + 2 = 3 ✅
         // x + 2 = 3x ✅
         // x + 2 = 3x + 5 ✅
-        // TODO: tweak algorithm to solve 2(4x + 3) + 6 = 24 -4x
+        // 2(4x + 3) + 6 = 24 -4x ✅
 
         let [left, right] = this.sanitize(equation).split("=");
         let answer;
+
+        [left, right] = this.resolveBracketDistribution(left, right);
 
         if (this.containsVariableOnBothSies(left, right)) {
             // if boths sides contain a variable
@@ -118,12 +120,127 @@ class LinearEquation {
         this.showStepInfo(`${this.variable} = ${answer}`);
     }
 
+    resolveBracketDistribution(leftExpression, rightExpression) {
+        // TODO: add steps to expand bracket
+        const roundBracketsRegex = /[-/+]?[0-9]+\((.*?)\)/g;
+        let leftResolved, rightResolved;
+
+        let leftBracketExpressions = leftExpression.match(roundBracketsRegex);
+        if (leftBracketExpressions) {
+            leftResolved = this.resolveBrackets(
+                leftBracketExpressions,
+                leftExpression
+                    .replaceAll("+", "++")
+                    .replaceAll("-", "+-")
+                    .split("+")
+            );
+        } else {
+            leftResolved = leftExpression;
+        }
+
+        let rightBracketExpressions = rightExpression.match(roundBracketsRegex);
+        if (rightBracketExpressions) {
+            rightResolved = this.resolveBrackets(
+                rightBracketExpressions,
+                rightExpression
+                    .replaceAll("+", "++")
+                    .replaceAll("-", "+-")
+                    .split("+")
+            );
+        } else {
+            rightResolved = rightExpression;
+        }
+
+        return [leftResolved, rightResolved];
+    }
+
+    resolveBrackets(bracketExpressions, originalExpressionArray) {
+        // TODO: handle cases like -(x+1)
+        let counter = 0,
+            bracketExpanded = 0;
+        let expanded = "";
+        const brackets = ["(", ")"];
+
+        for (let i = 0; i < originalExpressionArray.length; i++) {
+            const element = originalExpressionArray[i];
+            if (!element) continue; // handle empty strings
+
+            if (
+                element.includes(brackets[0]) ||
+                element.includes(brackets[1])
+            ) {
+                if (counter == 0) {
+                    expanded += this.addSign(
+                        this.expandBracket(bracketExpressions[bracketExpanded])
+                    );
+                }
+                counter++;
+            } else {
+                expanded += this.addSign(element);
+            }
+
+            if (counter >= 2) {
+                bracketExpanded++;
+                counter = 0;
+            }
+        }
+
+        return expanded;
+    }
+
+    expandBracket(bracketExpression) {
+        let signedBracketExpression = this.addSign(bracketExpression);
+
+        let expandedBracket = "";
+
+        const coefficient = signedBracketExpression.split("(")[0]; // +2
+        let insideBracketExpression = signedBracketExpression
+            .split("(")[1]
+            .replace(")", ""); // '4x+3'
+
+        insideBracketExpression = insideBracketExpression
+            .replaceAll("+", "++")
+            .replaceAll("-", "+-")
+            .split("+"); // ['4x', '+3']
+
+        let expandedBracketExpresssion = insideBracketExpression.map(
+            (expression) => {
+                let calculated;
+                if (!expression) return "";
+
+                let expressionCoefficient = expression.split("x")[0];
+
+                if (expression.includes("x")) {
+                    if (expression === "x" || expression === "-x")
+                        expressionCoefficient = expression
+                            .replace("x", "1")
+                            .replace("-x", "-1"); // hanndle cases of x and -x
+                    calculated =
+                        coefficient * this.addSign(expressionCoefficient) + "x";
+                } else {
+                    calculated =
+                        coefficient * this.addSign(expressionCoefficient);
+                }
+
+                return this.addSign(calculated);
+            }
+        );
+
+        expandedBracketExpresssion.forEach((term) => {
+            expandedBracket += term;
+        });
+
+        return expandedBracket;
+    }
+
     resolveVariablesOnRightSide(
         leftSide,
         variablesToAdd,
         newRightSide,
         rightSide
     ) {
+        // BUG: fix issue with rearrangement of equation like changed `1 = 2x` into `2x = 1`
+
         // move the variables on the right side to the left side
         let expressionToAdd = "";
         this.showStep("Collect like terms");
@@ -407,7 +524,8 @@ submitBtn.addEventListener("click", (e) => {
 clearBtn.addEventListener("click", (e) => {
     e.preventDefault();
     questionInput.value = "";
-    responsesContainer.innerHTML = "";
+    responsesContainer.innerHTML =
+        "<li class='step'>Type an equation in the box above...</li>";
 });
 
 function displayError(message, errorMessages) {
