@@ -291,8 +291,6 @@ class LinearEquation {
         newRightSide,
         rightSide
     ) {
-        // BUG: fix issue with rearrangement of equation like changed `1 = 2x` into `2x = 1`
-
         // move the variables on the right side to the left side
         let expressionToAdd = "";
         this.showStep("Collect like terms");
