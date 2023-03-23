@@ -1,3 +1,5 @@
+"use strict";
+
 const submitBtn = document.querySelector("#submitBtn");
 const clearBtn = document.querySelector("#clearBtn");
 const questionInput = document.querySelector("#question");
@@ -383,13 +385,6 @@ class LinearEquation {
     evaluateNumbers(string, numberTotalFromOtherEquationSide, variableSum) {
         // I could have used the eval() function but Function() this is faster
         this.showStep("Simplify");
-        console.log(
-            "SS:",
-            string,
-            numberTotalFromOtherEquationSide,
-            "VVS:",
-            variableSum
-        );
         const numberToAdd = numberTotalFromOtherEquationSide
             ? parseInt(numberTotalFromOtherEquationSide)
             : null;
