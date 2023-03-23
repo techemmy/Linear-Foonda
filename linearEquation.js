@@ -29,6 +29,7 @@ class LinearEquation {
     }
 
     addToHTML(content, type) {
+        if (!this.responses) return;
         const response = document.createElement("li");
         response.className = type;
         response.innerHTML = content;
