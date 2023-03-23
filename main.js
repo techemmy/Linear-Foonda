@@ -20,6 +20,10 @@ class LinearEquation {
         this.solve(question);
     }
 
+    showQuestion(question) {
+        return this.addToHTML(`Question: ${question} `, "step");
+    }
+
     showStep(step) {
         // console.log(`Step ${this.step}: ${step}`);
         return this.addToHTML(`Step ${this.step}: ${step} `, "step");
@@ -71,6 +75,8 @@ class LinearEquation {
         // x + 2 = 3x ✅
         // x + 2 = 3x + 5 ✅
         // 2(4x + 3) + 6 = 24 -4x ✅
+
+        this.showQuestion(`<b>${equation}</b>`);
 
         let [left, right] = this.sanitize(equation).split("=");
         let answer;
@@ -375,6 +381,13 @@ class LinearEquation {
     evaluateNumbers(string, numberTotalFromOtherEquationSide, variableSum) {
         // I could have used the eval() function but Function() this is faster
         this.showStep("Simplify");
+        console.log(
+            "SS:",
+            string,
+            numberTotalFromOtherEquationSide,
+            "VVS:",
+            variableSum
+        );
         const numberToAdd = numberTotalFromOtherEquationSide
             ? parseInt(numberTotalFromOtherEquationSide)
             : null;
@@ -382,9 +395,11 @@ class LinearEquation {
 
         if (numberToAdd && numberToAdd !== 0) {
             this.showStepInfo(
-                `${variableSum}${this.variable} = ${string} ${numberToAdd}`
+                `${variableSum}${this.variable} = ${string} ${this.addSign(
+                    numberToAdd
+                )}`
             );
-            sum = Function("return " + string + numberToAdd)();
+            sum = Function("return " + string + this.addSign(numberToAdd))();
             this.showStepInfo(`${variableSum}${this.variable} = ${sum}`);
             return sum;
         } else {
