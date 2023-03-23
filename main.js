@@ -208,15 +208,19 @@ class LinearEquation {
                 let calculated;
                 if (!expression) return "";
 
-                let expressionCoefficient = expression.split("x")[0];
+                let expressionCoefficient = expression.split(this.variable)[0];
 
-                if (expression.includes("x")) {
-                    if (expression === "x" || expression === "-x")
+                if (expression.includes(this.variable)) {
+                    if (
+                        expression === this.variable ||
+                        expression === `-${this.variable}`
+                    )
                         expressionCoefficient = expression
-                            .replace("x", "1")
-                            .replace("-x", "-1"); // hanndle cases of x and -x
+                            .replace(this.variable, "1")
+                            .replace(`-${this.variable}`, "-1"); // handle cases of x and -x
                     calculated =
-                        coefficient * this.addSign(expressionCoefficient) + "x";
+                        coefficient * this.addSign(expressionCoefficient) +
+                        this.variable;
                 } else {
                     calculated =
                         coefficient * this.addSign(expressionCoefficient);
@@ -333,7 +337,7 @@ class LinearEquation {
 
         if (numberToAdd && numberToAdd !== 0) {
             this.showStepInfo(
-                `${variableSum}${this.variable} = ${string} + ${numberToAdd}`
+                `${variableSum}${this.variable} = ${string} ${numberToAdd}`
             );
             sum = Function("return " + string + numberToAdd)();
             this.showStepInfo(`${variableSum}${this.variable} = ${sum}`);
