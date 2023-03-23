@@ -1,0 +1,20 @@
+{
+  "name": "foondamate-challenge",
+  "version": "1.0.0",
+  "description": "The app helps students solve linear equations with step-by-step guide.",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/techemmy/Linear-Foonda.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/techemmy/Linear-Foonda/issues"
+  },
+  "homepage": "https://github.com/techemmy/Linear-Foonda#readme"
+}
