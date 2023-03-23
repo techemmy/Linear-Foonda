@@ -21,19 +21,19 @@ class LinearEquation {
     }
 
     showStep(step) {
-        console.log(`Step ${this.step}: ${step}`);
+        // console.log(`Step ${this.step}: ${step}`);
         return this.addToHTML(`Step ${this.step}: ${step} `, "step");
     }
 
     showStepInfo(info) {
-        console.log(info);
+        // console.log(info);
         return this.addToHTML(info, "step-info");
     }
 
     addToHTML(content, type) {
         const response = document.createElement("li");
         response.className = type;
-        response.textContent = content;
+        response.innerHTML = content;
         this.responses.appendChild(response);
     }
 
@@ -121,7 +121,6 @@ class LinearEquation {
     }
 
     resolveBracketDistribution(leftExpression, rightExpression) {
-        // TODO: add steps to expand bracket
         const roundBracketsRegex = /[-/+]?[0-9]?\((.*?)\)/g;
         let leftResolved, rightResolved;
 
@@ -132,7 +131,8 @@ class LinearEquation {
                 leftExpression
                     .replaceAll("+", "++")
                     .replaceAll("-", "+-")
-                    .split("+")
+                    .split("+"),
+                "left"
             );
         } else {
             leftResolved = leftExpression;
@@ -145,7 +145,8 @@ class LinearEquation {
                 rightExpression
                     .replaceAll("+", "++")
                     .replaceAll("-", "+-")
-                    .split("+")
+                    .split("+"),
+                "right"
             );
         } else {
             rightResolved = rightExpression;
@@ -154,11 +155,15 @@ class LinearEquation {
         return [leftResolved, rightResolved];
     }
 
-    resolveBrackets(bracketExpressions, originalExpressionArray) {
+    resolveBrackets(bracketExpressions, originalExpressionArray, equationSide) {
         let counter = 0,
             bracketExpanded = 0;
-        let expanded = "";
+        let totalExpressionExpanded = "";
         const brackets = ["(", ")"];
+
+        this.showStep(
+            `Expand the bracket(s): ${bracketExpressions.join(", ")}`
+        );
 
         for (let i = 0; i < originalExpressionArray.length; i++) {
             const element = originalExpressionArray[i];
@@ -169,13 +174,27 @@ class LinearEquation {
                 element.includes(brackets[1])
             ) {
                 if (counter == 0) {
-                    expanded += this.addSign(
-                        this.expandBracket(bracketExpressions[bracketExpanded])
+                    const expressionToExpand =
+                        bracketExpressions[bracketExpanded];
+                    const expanded = this.addSign(
+                        this.expandBracket(expressionToExpand)
                     );
+                    this.showStepInfo(
+                        `${expressionToExpand} becomes ${expanded
+                            .replaceAll(
+                                `-1${this.variable}`,
+                                `-${this.variable}`
+                            )
+                            .replaceAll(
+                                `+1${this.variable}`,
+                                `+${this.variable}`
+                            )}`
+                    );
+                    totalExpressionExpanded += expanded;
                 }
                 counter++;
             } else {
-                expanded += this.addSign(element);
+                totalExpressionExpanded += this.addSign(element);
             }
 
             if (counter >= 2) {
@@ -184,11 +203,16 @@ class LinearEquation {
             }
         }
 
-        return expanded;
+        this.showStepInfo(
+            `The ${equationSide} side of the equation becomes: ${totalExpressionExpanded}`
+        );
+        this.step++;
+        return totalExpressionExpanded;
     }
 
     expandBracket(bracketExpression) {
         let signedBracketExpression = this.addSign(bracketExpression);
+        this.showStepInfo(`For <u>${signedBracketExpression}</u>`);
 
         let expandedBracket = "";
 
@@ -216,16 +240,35 @@ class LinearEquation {
                     if (
                         expression === this.variable ||
                         expression === `-${this.variable}`
-                    )
+                    ) {
                         expressionCoefficient = expression
                             .replace(this.variable, "1")
-                            .replace(`-${this.variable}`, "-1"); // handle cases of x and -x
+                            .replace(`-${this.variable}`, "-1"); // handle cases of x and -x as coefficients
+                    }
+
                     calculated =
                         coefficient * this.addSign(expressionCoefficient) +
                         this.variable;
+
+                    this.showStepInfo(
+                        `Multipy ${coefficient} by ${expressionCoefficient
+                            .replaceAll("1x", "x")
+                            .replaceAll("-1x", "-x")}${
+                            this.variable
+                        } -> ${this.addSign(
+                            calculated
+                                .replaceAll("1x", "x")
+                                .replaceAll("-1x", "-x")
+                        )}`
+                    );
                 } else {
                     calculated =
                         coefficient * this.addSign(expressionCoefficient);
+                    this.showStepInfo(
+                        `Multipy ${coefficient} by ${expressionCoefficient} -> ${this.addSign(
+                            calculated
+                        )}`
+                    );
                 }
 
                 return this.addSign(calculated);
@@ -406,7 +449,7 @@ class LinearEquation {
         if (variablesToAdd.length > 1) {
             this.showStep(
                 `Sum up the variables ${variablesToAdd.join(
-                    " "
+                    ", "
                 )} to give us ${variablesSum}${this.variable}`
             );
             this.showStepInfo(
@@ -432,7 +475,7 @@ class LinearEquation {
             );
             this.showStep(
                 `Sum up the numbers ${numbersOnlyArray.join(
-                    " "
+                    ", "
                 )} to give us ${parseInt(numbersTotal)}`
             );
             this.showStepInfo(
@@ -446,12 +489,6 @@ class LinearEquation {
                 )} = ${equationOtherSide}`
             );
 
-            // if (!parseInt(numbersTotal)) {
-            //     // if the total is zero
-            //     this.showStepInfo(
-            //         `${variablesSum}${this.variable} = ${equationOtherSide}`
-            //     );
-            // }
             this.step++;
             numberToAddToBothSides = this.invertAddOrSubtract(numbersTotal);
         }
