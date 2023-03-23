@@ -16,3 +16,6 @@ describe("Solve linear equations", () => {
         expect(solver.solve(equation)).toBe(1);
     });
 });
+
+// TODO: add more unit test cases
+// TODO: add integration tests
