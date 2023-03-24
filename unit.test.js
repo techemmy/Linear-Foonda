@@ -78,10 +78,28 @@ describe("Solve linear equations", () => {
 });
 
 describe("Handle invalid equations", () => {
-    test("5 - (2x + 5) - 5 = -6 + (-2x +5) + 6 is meant to throw contradiction error", () => {
+    test("x = x  throws a no solution error", () => {
+        const equation = "x = x";
+        const solver = new LinearEquation(equation);
+        expect(() => {
+            solver.solve(equation);
+        }).toThrow(/no solution/);
+    });
+
+    test("0x = 4  throws a no solution error", () => {
+        const equation = "0x = 4";
+        const solver = new LinearEquation(equation);
+        expect(() => {
+            solver.solve(equation);
+        }).toThrow(/no solution/);
+    });
+
+    test("5 - (2x + 5) - 5 = -6 + (-2x +5) + 6  throws a no solution error", () => {
         const equation = "5 - (2x + 5) - 5 = -6 + (-2x +5) + 6";
         const solver = new LinearEquation(equation);
-        expect(solver.solve(equation)).toThrow(new Error(/No solution/));
+        expect(() => {
+            solver.solve(equation);
+        }).toThrow(/no solution/);
     });
 });
 
