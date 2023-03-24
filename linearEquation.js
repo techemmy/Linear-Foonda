@@ -62,15 +62,6 @@ class LinearEquation {
     }
 
     solve(equation) {
-        // 2x = 3 ✅
-        // 2x + 3x = 3 ✅
-        // 2x + 3x = 3 + 5 ✅
-        // 7x - 2 = 21 ✅
-        // x + 1 + 2 = 3 ✅
-        // x + 2 = 3x ✅
-        // x + 2 = 3x + 5 ✅
-        // 2(4x + 3) + 6 = 24 -4x ✅
-
         this.showQuestion(`<b>${equation}</b>`);
 
         let [left, right] = this.sanitize(equation).split("=");
