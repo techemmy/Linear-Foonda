@@ -491,8 +491,11 @@ class LinearEquation {
 
     divideByCoefficient(dividend, divisor) {
         if (divisor === 0) {
-            this.showStep("The input is a contradiction: it has no solutions");
-            throw new Error("no solution"); // prevent infinity solution
+            this.addToHTML(
+                "The equation is a contradiction: it has no solutions",
+                "error"
+            );
+            throw new Error("No solution... Try again!"); // prevent infinity solution
         }
 
         const result = dividend / divisor;

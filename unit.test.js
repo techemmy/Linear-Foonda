@@ -81,11 +81,8 @@ describe("Handle invalid equations", () => {
     test("5 - (2x + 5) - 5 = -6 + (-2x +5) + 6 is meant to throw contradiction error", () => {
         const equation = "5 - (2x + 5) - 5 = -6 + (-2x +5) + 6";
         const solver = new LinearEquation(equation);
-        expect(solver.solve(equation)).toThrow(
-            new Error("The input is a contradiction: it has no solutions")
-        );
+        expect(solver.solve(equation)).toThrow(new Error(/No solution/));
     });
 });
 
-// TODO: add more unit test cases
 // TODO: add integration tests

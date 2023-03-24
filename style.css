@@ -76,7 +76,8 @@ form button {
     margin: 1em;
 }
 
-#responses li.step {
+#responses li.step,
+#responses li.error {
     margin: 2em 0 0;
 }
 
