@@ -9,6 +9,7 @@ describe("Solve linear equations", () => {
         const solver = new LinearEquation(equation);
         const solution = solver.solve(equation);
         expect(solution).toBe(5);
+        expect(typeof solution).toBe("number");
     });
 
     test("2x = 3 is equal to 3/2 (1.5)", () => {
@@ -17,6 +18,7 @@ describe("Solve linear equations", () => {
         const solution = solver.solve(equation);
         expect(solution).toBe(3 / 2);
         expect(solution).toBe(1.5);
+        expect(typeof solution).toBe("number");
     });
 
     test("2x - 5x = x is equal to 0", () => {
@@ -24,6 +26,7 @@ describe("Solve linear equations", () => {
         const solver = new LinearEquation(equation);
         const solution = solver.solve(equation);
         expect(solution).toBe(0);
+        expect(typeof solution).toBe("number");
     });
 
     test("-(x + 5) = 3 is equal to -8", () => {
@@ -31,6 +34,7 @@ describe("Solve linear equations", () => {
         const solver = new LinearEquation(equation);
         const solution = solver.solve(equation);
         expect(solution).toBe(-8);
+        expect(typeof solution).toBe("number");
     });
 
     test("2x = 3 + 5 is equal to 4", () => {
@@ -38,6 +42,7 @@ describe("Solve linear equations", () => {
         const solver = new LinearEquation(equation);
         const solution = solver.solve(equation);
         expect(solution).toBe(4);
+        expect(typeof solution).toBe("number");
     });
 
     test("2x + 3x = 3 is equal to 3/5 (0.6)", () => {
@@ -46,6 +51,7 @@ describe("Solve linear equations", () => {
         const solution = solver.solve(equation);
         expect(solution).toBe(3 / 5);
         expect(solution).toBe(0.6);
+        expect(typeof solution).toBe("number");
     });
 
     test("x + 2 = 3x + 5 is equal to -3/2 (-1.5)", () => {
@@ -54,6 +60,7 @@ describe("Solve linear equations", () => {
         const solution = solver.solve(equation);
         expect(solution).toBe(-3 / 2);
         expect(solution).toBe(-1.5);
+        expect(typeof solution).toBe("number");
     });
 
     test("2x + 3x = 3 + 5 is equal to 8/5 (0.6)", () => {
@@ -62,6 +69,7 @@ describe("Solve linear equations", () => {
         const solution = solver.solve(equation);
         expect(solution).toBe(8 / 5);
         expect(solution).toBe(1.6);
+        expect(typeof solution).toBe("number");
     });
 
     test("7x - 2 = 21 is equal to 23/7 (3.2857142857142856)", () => {
@@ -70,6 +78,7 @@ describe("Solve linear equations", () => {
         const solution = solver.solve(equation);
         expect(solution).toBe(23 / 7);
         expect(solution).toBe(3.2857142857142856);
+        expect(typeof solution).toBe("number");
     });
 
     test("x + 1 + 2 = 3 is equal to 0/1 (0)", () => {
@@ -78,6 +87,7 @@ describe("Solve linear equations", () => {
         const solution = solver.solve(equation);
         expect(solution).toBe(0 / 1);
         expect(solution).toBe(0);
+        expect(typeof solution).toBe("number");
     });
 
     test("2(4x + 3) + 6 = 24 -4x is equal to 1", () => {
@@ -85,6 +95,7 @@ describe("Solve linear equations", () => {
         const solver = new LinearEquation(equation);
         const solution = solver.solve(equation);
         expect(solution).toBe(1);
+        expect(typeof solution).toBe("number");
     });
 });
 
