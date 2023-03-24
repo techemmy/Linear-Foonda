@@ -340,13 +340,13 @@ class LinearEquation {
             this.showStep(currentStep);
 
             this.showStepInfo(
-                `${variableSum}${this.variable} ${this.invertAddOrSubtract(
+                `${this.addVariable(variableSum)} ${this.invertAddOrSubtract(
                     numbersToAddOnBothSides
                 )} = ${numberSide}`
             );
 
             this.showStepInfo(
-                `${variableSum}${this.variable} ${this.invertAddOrSubtract(
+                `${this.addVariable(variableSum)} ${this.invertAddOrSubtract(
                     numbersToAddOnBothSides
                 )} ${numbersToAddOnBothSides} = ${numberSide} ${numbersToAddOnBothSides}`
             );
@@ -371,20 +371,20 @@ class LinearEquation {
 
         if (numberToAdd && numberToAdd !== 0) {
             this.showStepInfo(
-                `${variableSum}${this.variable} = ${string} ${this.addSign(
+                `${this.addVariable(variableSum)} = ${string} ${this.addSign(
                     numberToAdd
                 )}`
             );
             sum = Function("return " + string + this.addSign(numberToAdd))();
-            this.showStepInfo(`${variableSum}${this.variable} = ${sum}`);
+            this.showStepInfo(`${this.addVariable(variableSum)} = ${sum}`);
             return sum;
         } else {
-            this.showStepInfo(`${variableSum}${this.variable} = ${string}`);
+            this.showStepInfo(`${this.addVariable(variableSum)} = ${string}`);
             sum = Function("return " + string)();
         }
 
         if (sum !== parseInt(string)) {
-            this.showStepInfo(`${variableSum}${this.variable} = ${sum}`);
+            this.showStepInfo(`${this.addVariable(variableSum)} = ${sum}`);
         }
         return sum;
     }
@@ -440,7 +440,7 @@ class LinearEquation {
             this.showStep(
                 `Sum up the variables ${variablesToAdd.join(
                     ", "
-                )} to give us ${variablesSum}${this.variable}`
+                )} to give us ${this.addVariable(variablesSum)}`
             );
             this.showStepInfo(
                 `${variablesToAdd.join(" ")} ${numbersOnlyArray.join(
@@ -448,7 +448,7 @@ class LinearEquation {
                 )} = ${equationOtherSide}`
             );
             this.showStepInfo(
-                `${variablesSum}${this.variable} ${numbersOnlyArray.join(
+                `${this.addVariable(variablesSum)} ${numbersOnlyArray.join(
                     " "
                 )} = ${equationOtherSide}`
             );
@@ -469,12 +469,12 @@ class LinearEquation {
                 )} to give us ${parseInt(numbersTotal)}`
             );
             this.showStepInfo(
-                `${variablesSum}${this.variable} ${numbersOnlyArray.join(
+                `${this.addVariable(variablesSum)} ${numbersOnlyArray.join(
                     " "
                 )} = ${equationOtherSide}`
             );
             this.showStepInfo(
-                `${variablesSum}${this.variable} ${this.addSign(
+                `${this.addVariable(variablesSum)} ${this.addSign(
                     numbersTotal
                 )} = ${equationOtherSide}`
             );
@@ -483,19 +483,17 @@ class LinearEquation {
             numberToAddToBothSides = this.invertAddOrSubtract(numbersTotal);
         }
 
-        // if (numbersTotal) console.log(`Now, we have ${variablesSum}${this.variable} ${this.addSign(numbersTotal)} = ${equationOtherSide}`);
-        // else console.log(`Now, we have ${variablesSum}${this.variable} = ${equationOtherSide}`);
+        // if (numbersTotal) console.log(`Now, we have ${this.addVariable(variablesSum)} ${this.addSign(numbersTotal)} = ${equationOtherSide}`);
+        // else console.log(`Now, we have ${this.addVariable(variablesSum)} = ${equationOtherSide}`);
 
         return [variablesSum, numberToAddToBothSides];
     }
 
     divideByCoefficient(dividend, divisor) {
         if (divisor === 0) {
-            this.addToHTML(
-                "The equation is a contradiction: it has no solutions",
-                "error"
-            );
-            throw new Error("No solution... Try again!"); // prevent infinity solution
+            throw new Error(
+                "The equation is a contradiction: it has no solutions... Try again!"
+            ); // prevent infinity solution
         }
 
         const result = dividend / divisor;
@@ -535,6 +533,11 @@ class LinearEquation {
         if (expression.startsWith("-")) return expression;
         else if (expression.startsWith("+")) return expression;
         else return `+${expression}`;
+    }
+
+    addVariable(value) {
+        if (value === 0) return value;
+        return `${value}${this.variable}`;
     }
 
     containNumberOnly(string) {
