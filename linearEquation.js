@@ -117,10 +117,11 @@ class LinearEquation {
             answer = this.resolveNumberAndVariableSide(right, left);
         }
 
+        if (answer === -0) answer = answer.toString().replace("-0", 0);
         this.showStep("Solution");
         this.showStepInfo(`${this.variable} = ${answer}`);
 
-        return answer;
+        return Number(answer);
     }
 
     resolveBracketDistribution(leftExpression, rightExpression) {
@@ -172,37 +173,29 @@ class LinearEquation {
             const element = originalExpressionArray[i];
             if (!element) continue; // handle empty strings
 
-            if (
-                element.includes(brackets[0]) ||
-                element.includes(brackets[1])
-            ) {
-                if (counter == 0) {
-                    const expressionToExpand =
-                        bracketExpressions[bracketExpanded];
-                    const expanded = this.addSign(
-                        this.expandBracket(expressionToExpand)
-                    );
-                    this.showStepInfo(
-                        `${expressionToExpand} becomes ${expanded
-                            .replaceAll(
-                                `-1${this.variable}`,
-                                `-${this.variable}`
-                            )
-                            .replaceAll(
-                                `+1${this.variable}`,
-                                `+${this.variable}`
-                            )}`
-                    );
-                    totalExpressionExpanded += expanded;
-                }
-                counter++;
-            } else {
-                totalExpressionExpanded += this.addSign(element);
-            }
+            if (element.includes(brackets[0])) {
+                counter = 1;
 
-            if (counter >= 2) {
+                const expressionToExpand = bracketExpressions[bracketExpanded];
                 bracketExpanded++;
+
+                const expanded = this.addSign(
+                    this.expandBracket(expressionToExpand)
+                );
+
+                this.showStepInfo(
+                    `${expressionToExpand} becomes ${expanded
+                        .replaceAll(`-1${this.variable}`, `-${this.variable}`)
+                        .replaceAll(`+1${this.variable}`, `+${this.variable}`)}`
+                );
+                totalExpressionExpanded += expanded;
+            } else if (element.includes(brackets[1])) {
                 counter = 0;
+            } else if (counter === 0) {
+                counter++;
+                totalExpressionExpanded += this.addSign(element);
+            } else {
+                counter++;
             }
         }
 
@@ -327,7 +320,6 @@ class LinearEquation {
         // e.g 3x = 4, 5x + 2x +2 = 44, 4x + 3 = 3 + 7
         const [variableSum, numbersToAddOnBothSides] =
             this.evaluateVariablesSide(variableSide, numberSide);
-
         if (
             numbersToAddOnBothSides &&
             parseInt(numbersToAddOnBothSides) !== 0
@@ -359,10 +351,6 @@ class LinearEquation {
                 )} ${numbersToAddOnBothSides} = ${numberSide} ${numbersToAddOnBothSides}`
             );
             this.step++;
-
-            // this.showStep("Simplify");
-            // this.showStepInfo(`${variableSum}${this.variable} = ${numberSide}`);
-            // this.step++;
         }
 
         const numbersSum = this.evaluateNumbers(
@@ -448,7 +436,6 @@ class LinearEquation {
             this.addSign(variable)
         );
 
-        if (variablesSum === 0) throw new Error("no solution"); // prevent infinity solution
         if (variablesToAdd.length > 1) {
             this.showStep(
                 `Sum up the variables ${variablesToAdd.join(
@@ -503,6 +490,11 @@ class LinearEquation {
     }
 
     divideByCoefficient(dividend, divisor) {
+        if (divisor === 0) {
+            this.showStep("The input is a contradiction: it has no solutions");
+            throw new Error("no solution"); // prevent infinity solution
+        }
+
         const result = dividend / divisor;
         this.showStep("divide both sides by the same factor");
         this.showStepInfo(`${divisor}${this.variable} = ${dividend}`);
@@ -515,12 +507,9 @@ class LinearEquation {
         this.showStepInfo(
             "Cancel terms that are in both the numerator and denominator"
         );
-        // this.showStepInfo(
-        //     `${divisor}${this.variable} = ${dividend}/${divisor}`
-        // );
+
         this.showStepInfo(`${this.variable} = ${dividend}/${divisor}`);
         this.step++;
-
         return result;
     }
 

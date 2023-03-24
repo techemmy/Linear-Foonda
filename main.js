@@ -17,7 +17,7 @@ submitBtn.addEventListener("click", (e) => {
         );
         solver.solve(question);
     } catch (error) {
-        console.log(error);
+        console.log("Error:", error);
         displayError(error.message, responsesContainer);
     }
 });
