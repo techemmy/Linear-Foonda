@@ -78,6 +78,13 @@ describe("Solve linear equations", () => {
 });
 
 describe("Handle invalid equations", () => {
+    test("0 = 0 throws an invalid equation error", () => {
+        const equation = "0 = 0";
+        expect(() => {
+            new LinearEquation(equation);
+        }).toThrow("Invalid linear equation");
+    });
+
     test("x = x  throws a no solution error", () => {
         const equation = "x = x";
         const solver = new LinearEquation(equation);
