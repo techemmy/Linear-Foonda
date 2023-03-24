@@ -14,10 +14,6 @@ class LinearEquation {
         this.variable = this.getVariable(question);
     }
 
-    showQuestion(question) {
-        return this.addToHTML(`Question: ${question} `, "step");
-    }
-
     showStep(step) {
         // console.log(`Step ${this.step}: ${step}`);
         return this.addToHTML(`Step ${this.step}: ${step} `, "step");
@@ -62,7 +58,7 @@ class LinearEquation {
     }
 
     solve(equation) {
-        this.showQuestion(`<b>${equation}</b>`);
+        this.addToHTML(`Question: <b>${equation}</b>`, "step question");
 
         let [left, right] = this.sanitize(equation).split("=");
         let answer;

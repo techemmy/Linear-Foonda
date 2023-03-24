@@ -76,8 +76,7 @@ form button {
     margin: 1em;
 }
 
-#responses li.step,
-#responses li.error {
+#responses li.step {
     margin: 2em 0 0;
 }
 
@@ -94,13 +93,9 @@ form button {
 }
 
 #responses li.error::before {
-    content: " ";
-    position: absolute;
-    margin-left: -2em;
-    width: 1em;
-    height: 1em;
-    background-color: transparent;
     border: 2px solid #e02441;
-    border-radius: 50%;
-    left: 0;
+}
+
+#responses li.question::before {
+    border: 2px solid #1ae073;
 }
