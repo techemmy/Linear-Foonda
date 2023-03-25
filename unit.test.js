@@ -131,5 +131,3 @@ describe("Handle invalid equations", () => {
         }).toThrow(/no solution/);
     });
 });
-
-// TODO: add integration tests
