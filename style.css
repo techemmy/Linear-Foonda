@@ -58,9 +58,19 @@ form button {
     background-color: #bcbcbc;
 }
 
+.responses-container {
+    border: 1px solid #3cff94;
+    padding: 1em;
+}
+
+.responses-container p {
+    color: #5a5a5a;
+    text-align: right;
+}
+
 #responses {
     list-style-type: none;
-    padding: 1em 2em 2em;
+    padding: 0 2em 2em;
     overflow-y: scroll;
     height: 300px;
 }
