@@ -11,11 +11,8 @@ submitBtn.addEventListener("click", (e) => {
     try {
         const question = questionInput.value;
         responsesContainer.innerHTML = "";
-        const solver = new LinearEquation(
-            question.toLowerCase(),
-            responsesContainer
-        );
-        solver.solve(question);
+        const solver = new LinearEquation(question, responsesContainer);
+        solver.solve();
     } catch (error) {
         console.log("Error:", error);
         displayError(error.message, responsesContainer);

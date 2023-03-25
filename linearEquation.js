@@ -12,15 +12,14 @@ class LinearEquation {
         this.step = 1;
         this.responses = responses;
         this.variable = this.getVariable(question);
+        this.equation = this.sanitize(question);
     }
 
     showStep(step) {
-        // console.log(`Step ${this.step}: ${step}`);
         return this.addToHTML(`Step ${this.step}: ${step} `, "step");
     }
 
     showStepInfo(info) {
-        // console.log(info);
         return this.addToHTML(info, "step-info");
     }
 
@@ -33,7 +32,11 @@ class LinearEquation {
     }
 
     sanitize(equation) {
-        const equationWithoutSpaces = equation.trim().split(" ").join("");
+        const equationWithoutSpaces = equation
+            .toLowerCase()
+            .trim()
+            .split(" ")
+            .join("");
         if (!equationWithoutSpaces || !equation.includes("=")) {
             // if it's an empty string
             throw new Error("Invalid equation");
@@ -57,29 +60,27 @@ class LinearEquation {
         throw new Error("Invalid linear equation");
     }
 
-    solve(equation) {
-        this.addToHTML(`Question: <b>${equation}</b>`, "step question");
+    solve() {
+        this.addToHTML(`Question: <b>${this.equation}</b>`, "step question");
 
-        let [left, right] = this.sanitize(equation).split("=");
+        let [left, right] = this.equation.split("=");
+        let rightExpressionVariables = [],
+            rightWithoutVariables = [];
         let answer;
 
         [left, right] = this.resolveBracketDistribution(left, right);
 
-        if (this.containsVariableOnBothSies(left, right)) {
+        if (this.containsVariableOnBothSides(left, right)) {
             // if boths sides contain a variable
             let rightExpression = right
                 .replaceAll("+", "++")
                 .replaceAll("-", "+-")
                 .split("+");
-            const rightExpressionVariables = rightExpression.filter((value) => {
-                if (this.containVariable(value)) return true;
-                return false;
-            });
-
-            const rightWithoutVariables = rightExpression.filter((value) => {
+            rightExpression.forEach((value) => {
+                if (this.containVariable(value))
+                    rightExpressionVariables.push(value);
                 if (value && !rightExpressionVariables.includes(value))
-                    return true;
-                return false;
+                    rightWithoutVariables.push(value);
             });
 
             [left, right] = this.resolveVariablesOnRightSide(
@@ -91,13 +92,13 @@ class LinearEquation {
         }
 
         if (
-            // check if left contains only a number and right has a variable
+            // check if left contains only numbers and right has a variable
             this.containNumberOnly(left) &&
             this.containVariable(right, this.variable)
         ) {
             answer = this.resolveNumberAndVariableSide(left, right);
         } else if (
-            // check if right contains only a number and left has a variable
+            // check if right contains only numbers and left has a variable
             this.containNumberOnly(right) &&
             this.containVariable(left, this.variable)
         ) {
@@ -265,43 +266,6 @@ class LinearEquation {
         return expandedBracket;
     }
 
-    resolveVariablesOnRightSide(
-        leftSide,
-        variablesToAdd,
-        newRightSide,
-        rightSide
-    ) {
-        // move the variables on the right side to the left side
-        let expressionToAdd = "";
-        this.showStep("Collect like terms");
-        this.showStepInfo(
-            `Move ${variablesToAdd.join(", ")} to the left side of the equation`
-        );
-        this.showStepInfo(`${leftSide} = ${rightSide}`);
-
-        variablesToAdd.forEach((value) => {
-            expressionToAdd += this.invertAddOrSubtract(this.addSign(value));
-        });
-
-        let newRightExpression = newRightSide
-            .map((value) => this.addSign(value))
-            .join("");
-        if (!newRightExpression) newRightExpression = "0";
-
-        const newLeftExpression = `${leftSide}${expressionToAdd}`;
-        this.showStepInfo(`${newLeftExpression} = ${newRightExpression}`);
-
-        this.step++;
-        return [newLeftExpression, newRightExpression];
-    }
-
-    containsVariableOnBothSies(leftExpression, rightExpression) {
-        return (
-            this.containVariable(leftExpression) &&
-            this.containVariable(rightExpression)
-        );
-    }
-
     resolveNumberAndVariableSide(numberSide, variableSide) {
         // the function helps to solve equations with a variable on one side and number(s) on the other side
         // e.g 3x = 4, 5x + 2x +2 = 44, 4x + 3 = 3 + 7
@@ -314,24 +278,27 @@ class LinearEquation {
             const signedNumToAdd = this.addSign(numbersToAddOnBothSides);
             const operation = signedNumToAdd[0];
             let currentStep;
-            if (operation === "+") {
-                currentStep = `${
-                    this.operators[signedNumToAdd[0]]
-                } ${numbersToAddOnBothSides} to both sides`;
-            } else if (operation === "-") {
-                currentStep = `${
-                    this.operators[signedNumToAdd[0]]
-                } ${numbersToAddOnBothSides} from both sides`;
+
+            switch (operation) {
+                case "+":
+                    currentStep = `${
+                        this.operators[signedNumToAdd[0]]
+                    } ${numbersToAddOnBothSides} to both sides`;
+                    break;
+                case "-":
+                    currentStep = `${
+                        this.operators[signedNumToAdd[0]]
+                    } ${numbersToAddOnBothSides} from both sides`;
+                    break;
+                default:
+                    break;
             }
-
             this.showStep(currentStep);
-
             this.showStepInfo(
                 `${this.addVariable(variableSum)} ${this.invertAddOrSubtract(
                     numbersToAddOnBothSides
                 )} = ${numberSide}`
             );
-
             this.showStepInfo(
                 `${this.addVariable(variableSum)} ${this.invertAddOrSubtract(
                     numbersToAddOnBothSides
@@ -348,132 +315,166 @@ class LinearEquation {
         return this.divideByCoefficient(numbersSum, variableSum);
     }
 
-    evaluateNumbers(string, numberTotalFromOtherEquationSide, variableSum) {
-        // I could have used the eval() function but Function() this is faster
-        this.showStep("Simplify");
-        const numberToAdd = numberTotalFromOtherEquationSide
-            ? parseInt(numberTotalFromOtherEquationSide)
-            : null;
-        let sum;
+    resolveVariablesOnRightSide(
+        leftSide,
+        variablesToAdd,
+        rightSideWithoutVariables,
+        rightSide
+    ) {
+        // move the variables on the right side to the left side
+        let expressionToAdd = "";
+        this.showStep("Collect like terms");
+        this.showStepInfo(
+            `Move ${variablesToAdd.join(", ")} to the left side of the equation`
+        );
+        this.showStepInfo(`${leftSide} = ${rightSide}`);
 
-        if (numberToAdd && numberToAdd !== 0) {
-            this.showStepInfo(
-                `${this.addVariable(variableSum)} = ${string} ${this.addSign(
-                    numberToAdd
-                )}`
-            );
-            sum = Function("return " + string + this.addSign(numberToAdd))();
-            this.showStepInfo(`${this.addVariable(variableSum)} = ${sum}`);
-            return sum;
-        } else {
-            this.showStepInfo(`${this.addVariable(variableSum)} = ${string}`);
-            sum = Function("return " + string)();
-        }
+        variablesToAdd.forEach((value) => {
+            expressionToAdd += this.invertAddOrSubtract(this.addSign(value));
+        });
 
-        if (sum !== parseInt(string)) {
-            this.showStepInfo(`${this.addVariable(variableSum)} = ${sum}`);
-        }
-        return sum;
+        let newRightSideExpression = rightSideWithoutVariables
+            .map((value) => this.addSign(value))
+            .join("");
+        if (!newRightSideExpression) newRightSideExpression = "0";
+
+        const newLeftSideExpression = `${leftSide}${expressionToAdd}`;
+        this.showStepInfo(
+            `${newLeftSideExpression} = ${newRightSideExpression}`
+        );
+
+        this.step++;
+        return [newLeftSideExpression, newRightSideExpression];
     }
 
     evaluateVariablesSide(string, equationOtherSide) {
-        let numbersTotal, numberToAddToBothSides;
-        let variablesToAdd = [];
-        let numbersOnlyArray = [];
-        let variablesSum = 0;
+        let numberToAddToBothSides,
+            variablesCoefficientSum = 0;
+        let variablesToAdd = [],
+            numbersArray = [];
 
         // replace + with ++ and - with +-
         // then split the string by the extra plus we just added
         let expressionWithPlus = string
             .replaceAll("+", "++")
             .replaceAll("-", "+-");
-        let variables = expressionWithPlus.split("+");
+        let expressionItems = expressionWithPlus.split("+");
 
-        // add a number to the front of a single variable e.g x will be come 1x, -x will become -1x
-        variables = variables.map((variable) => {
-            const count = variable.split(this.variable).length - 1;
-            if (count > 1) throw new Error("Invalid Equation"); // to make sure we don't have something like "2xx"
+        // sort out the items
+        expressionItems.forEach((variable) => {
+            if (variable !== "" && !isNaN(variable)) {
+                // if item is a number
+                numbersArray.push(this.addSign(variable));
+            } else if (variable && this.containVariable(variable)) {
+                // if item is a variable
+                let variableToAdd = this.addSign(variable);
+                const count = variable.split(this.variable).length - 1;
 
-            if (variable === this.variable) {
-                return `1${variable}`;
-            } else if (variable === `-${this.variable}`) {
-                return `${variable[0]}1${variable[1]}`;
-            }
-            return variable;
-        });
+                if (count > 1) throw new Error("Invalid Equation"); // to make sure we don't have something like "2xx"
 
-        // sum up the variables
-        variables.forEach((variable) => {
-            if (!isNaN(variable) && variable !== "") {
-                // if it's only a number
-                numbersOnlyArray.push(variable);
-            } else if (variable) {
-                // add the variables together
-                const variableToAdd = this.addSign(variable);
+                // add a number to the front of a single variable e.g x will be come 1x, -x will become -1x
+                switch (variableToAdd) {
+                    case this.variable:
+                        variableToAdd = `1${variableToAdd}`;
+                        break;
+                    case `-${this.variable}`:
+                        variableToAdd = `${variableToAdd[0]}1${variableToAdd[1]}`;
+                        break;
+                    case `+${this.variable}`:
+                        variableToAdd = `${variableToAdd[0]}1${variableToAdd[1]}`;
+                        break;
+                    default:
+                        break;
+                }
                 variablesToAdd.push(variableToAdd);
-                const coefficient = variable.substr(0, variable.length - 1); // exclude the x
-                variablesSum += parseInt(coefficient);
+
+                // sum up the coefficients of the variable
+                const coefficient = variableToAdd.substr(
+                    0,
+                    variableToAdd.length - 1
+                ); // exclude the variable alphabet e.g -4x becomes -4
+                variablesCoefficientSum += parseInt(coefficient);
             }
         });
-
-        numbersOnlyArray = numbersOnlyArray.map((number) =>
-            this.addSign(number)
-        );
-        variablesToAdd = variablesToAdd.map((variable) =>
-            this.addSign(variable)
-        );
 
         if (variablesToAdd.length > 1) {
             this.showStep(
                 `Sum up the variables ${variablesToAdd.join(
                     ", "
-                )} to give us ${this.addVariable(variablesSum)}`
+                )} to give us ${this.addVariable(variablesCoefficientSum)}`
             );
             this.showStepInfo(
-                `${variablesToAdd.join(" ")} ${numbersOnlyArray.join(
+                `${variablesToAdd.join(" ")} ${numbersArray.join(
                     " "
                 )} = ${equationOtherSide}`
             );
             this.showStepInfo(
-                `${this.addVariable(variablesSum)} ${numbersOnlyArray.join(
-                    " "
-                )} = ${equationOtherSide}`
+                `${this.addVariable(
+                    variablesCoefficientSum
+                )} ${numbersArray.join(" ")} = ${equationOtherSide}`
             );
             this.step++;
         }
 
-        if (numbersOnlyArray.length === 1) {
-            numbersTotal = numbersOnlyArray[0];
-            numberToAddToBothSides = this.invertAddOrSubtract(numbersTotal);
-        } else if (numbersOnlyArray.length > 1) {
-            numbersTotal = numbersOnlyArray.reduce(
+        if (numbersArray.length > 1) {
+            const numbersTotal = numbersArray.reduce(
                 (a, b) => parseInt(a) + parseInt(b),
                 0
             );
             this.showStep(
-                `Sum up the numbers ${numbersOnlyArray.join(
+                `Sum up the numbers ${numbersArray.join(
                     ", "
                 )} to give us ${parseInt(numbersTotal)}`
             );
             this.showStepInfo(
-                `${this.addVariable(variablesSum)} ${numbersOnlyArray.join(
-                    " "
-                )} = ${equationOtherSide}`
+                `${this.addVariable(
+                    variablesCoefficientSum
+                )} ${numbersArray.join(" ")} = ${equationOtherSide}`
             );
             this.showStepInfo(
-                `${this.addVariable(variablesSum)} ${this.addSign(
+                `${this.addVariable(variablesCoefficientSum)} ${this.addSign(
                     numbersTotal
                 )} = ${equationOtherSide}`
             );
 
             this.step++;
             numberToAddToBothSides = this.invertAddOrSubtract(numbersTotal);
+        } else if (numbersArray.length === 1) {
+            numberToAddToBothSides = this.invertAddOrSubtract(numbersArray[0]);
         }
 
-        // if (numbersTotal) console.log(`Now, we have ${this.addVariable(variablesSum)} ${this.addSign(numbersTotal)} = ${equationOtherSide}`);
-        // else console.log(`Now, we have ${this.addVariable(variablesSum)} = ${equationOtherSide}`);
+        return [variablesCoefficientSum, numberToAddToBothSides];
+    }
 
-        return [variablesSum, numberToAddToBothSides];
+    evaluateNumbers(string, numberTotalFromOtherEquationSide, variableSum) {
+        // I could have used the eval() function but Function() this is faster
+        let sum;
+        const numberToAdd = numberTotalFromOtherEquationSide
+            ? parseInt(numberTotalFromOtherEquationSide)
+            : null;
+
+        this.showStep("Simplify");
+
+        if (numberToAdd && numberToAdd !== 0) {
+            sum = Function("return " + string + this.addSign(numberToAdd))();
+
+            this.showStepInfo(
+                `${this.addVariable(variableSum)} = ${string} ${this.addSign(
+                    numberToAdd
+                )}`
+            );
+            this.showStepInfo(`${this.addVariable(variableSum)} = ${sum}`);
+            return sum;
+        } else {
+            sum = Function("return " + string)();
+            this.showStepInfo(`${this.addVariable(variableSum)} = ${string}`);
+        }
+
+        if (sum !== parseInt(string)) {
+            this.showStepInfo(`${this.addVariable(variableSum)} = ${sum}`);
+        }
+
+        return sum;
     }
 
     divideByCoefficient(dividend, divisor) {
@@ -484,7 +485,9 @@ class LinearEquation {
         }
 
         const result = dividend / divisor;
-        this.showStep("divide both sides by the same factor");
+        this.showStep(
+            `divide both sides by the same factor of ${this.variable}`
+        );
         this.showStepInfo(`${divisor}${this.variable} = ${dividend}`);
         this.showStepInfo(
             `(${divisor}${this.variable})/${divisor} = ${dividend}/${divisor}`
@@ -495,31 +498,41 @@ class LinearEquation {
         this.showStepInfo(
             "Cancel terms that are in both the numerator and denominator"
         );
-
         this.showStepInfo(`${this.variable} = ${dividend}/${divisor}`);
         this.step++;
         return result;
     }
 
+    containsVariableOnBothSides(leftExpression, rightExpression) {
+        return (
+            this.containVariable(leftExpression) &&
+            this.containVariable(rightExpression)
+        );
+    }
+
     invertAddOrSubtract(number) {
         let inverted;
         const value = number.toString();
-        if (value.startsWith("-")) {
-            inverted = `+${value.slice(1)}`;
-        } else if (value.startsWith("+")) {
-            inverted = `-${value.slice(1)}`;
-        } else {
-            inverted = `-${value}`;
+        switch (value[0]) {
+            case "-":
+                inverted = `+${value.slice(1)}`;
+                break;
+            case "+":
+                inverted = `-${value.slice(1)}`;
+                break;
+            default:
+                inverted = `-${value}`;
+                break;
         }
-
         return inverted;
     }
 
     addSign(value) {
         const expression = value.toString();
-        if (expression.startsWith("-")) return expression;
-        else if (expression.startsWith("+")) return expression;
-        else return `+${expression}`;
+        if (expression.startsWith("-") || expression.startsWith("+")) {
+            return expression;
+        }
+        return `+${expression}`;
     }
 
     addVariable(value) {
