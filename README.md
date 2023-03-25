@@ -2,14 +2,11 @@
 
 The app helps students solve algebraic equations with step-by-step guide.
 
-<!-- Improved compatibility of back to top link: See: https://github.com/othneildrew/Best-README-Template/pull/73 -->
-<a name="readme-top"></a>
-
 ![GitHub contributors](https://img.shields.io/github/contributors/techemmy/Linear-Foonda?style=for-the-badge)
 ![GitHub forks](https://img.shields.io/github/forks/techemmy/Linear-Foonda?style=for-the-badge)
 ![Stargazers](https://img.shields.io/github/stars/techemmy/Linear-Foonda?style=for-the-badge)
 ![Issues](https://img.shields.io/github/issues/techemmy/Linear-Foonda?style=for-the-badge)
-![Twitter Follow](https://img.shields.io/twitter/follow/techemmy?style=social)
+![Twitter Follow](https://img.shields.io/twitter/follow/itechemmy?style=social)
 
 <!-- TABLE OF CONTENTS -->
 <details>
@@ -28,7 +25,8 @@ The app helps students solve algebraic equations with step-by-step guide.
         <li><a href="#installation">Installation</a></li>
       </ul>
     </li>
-    <li><a href="#usage">Usage</a></li>
+    <li><a href="#contributing">Contributing</a></li>
+    <li><a href="#contact">Contact</a></li>
   </ol>
 </details>
 
@@ -45,7 +43,8 @@ The project runs on an algorithm I developed using the OOP approach. It works wi
 - Next, I call one of the equation solver class methods to solve the equation. To solve the equation using the following steps:
   - I remove the spaces between the equations
   - Split the equation into two by the equals symbol (`=`) into `left` and `right`
-  - Here, I call a method to check if both sides contain a variable e.g `2x` and collect like terms by taking the variables to the left-hand side.
+  - I check if there are brackets, expand them and replace the `left` and `right` with the expanded brackets
+  - After that, I call a method to check if both sides contain a variable e.g `2x` and collect like terms by taking the variables to the left-hand side.
   - Next, I call another method to sum up all the variables and numbers on the left hand side and return them
   - If there is a number returned from the left-hand side, I either add or subtract it from both sides depending on its sign to eliminate it from the left-hand side.
   - Then, I sum up all the numbers on the right-hand side
@@ -55,7 +54,7 @@ The project runs on an algorithm I developed using the OOP approach. It works wi
 
 The algorithm can get better.
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+<p align="right">(<a href="#linear-foonda">back to top</a>)</p>
 
 ### Built With
 
@@ -65,7 +64,7 @@ The algorithm can get better.
 ![Jest](https://img.shields.io/badge/-jest-%23C21325?style=for-the-badge&logo=jest&logoColor=white)
 ![Babel](https://img.shields.io/badge/Babel-F9DC3e?style=for-the-badge&logo=babel&logoColor=black)
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+<p align="right">(<a href="#linear-foonda">back to top</a>)</p>
 
 <!-- GETTING STARTED -->
 ## Getting Started
@@ -76,13 +75,11 @@ Make sure you have Node.js [downloaded](https://nodejs.org/en) and installed on 
 
 ### Installation
 
-_Below is an example of how you can instruct your audience on installing and setting up your app. This template doesn't rely on any external dependencies or services._
-
-1. Get a free API Key at [https://example.com](https://example.com)
+1. Be positive, it's going to work 😁😅
 2. Clone the repo
 
    ```sh
-   git clone https://github.com/your_username_/Project-Name.git
+   git clone https://github.com/techemmy/Linear-Foonda.git
    ```
 
 3. Install NPM packages
@@ -91,36 +88,16 @@ _Below is an example of how you can instruct your audience on installing and set
    npm install
    ```
 
-4. Enter your API in `config.js`
+4. Open you terminal and run
 
-   ```js
-   const API_KEY = 'ENTER YOUR API';
+   ```sh
+   npm start
    ```
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+5. If it doesn't work, open the `index.html` file in the base directory
 
-<!-- USAGE EXAMPLES -->
-## Usage
+<p align="right">(<a href="#linear-foonda">back to top</a>)</p>
 
-Use this space to show useful examples of how a project can be used. Additional screenshots, code examples and demos work well in this space. You may also link to more resources.
-
-_For more examples, please refer to the [Documentation](https://example.com)_
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-- [x] Add Changelog
-- [x] Add back to top links
-- [ ] Add Additional Templates w/ Examples
-- [ ] Add "components" document to easily copy & paste sections of the readme
-- [ ] Multi-language Support
-  - [ ] Chinese
-  - [ ] Spanish
-
-See the [open issues](https://github.com/othneildrew/Best-README-Template/issues) for a full list of proposed features (and known issues).
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-<!-- CONTRIBUTING -->
 ## Contributing
 
 Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
@@ -134,13 +111,13 @@ Don't forget to give the project a star! Thanks again!
 4. Push to the Branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+<p align="right">(<a href="#linear-foonda">back to top</a>)</p>
 
 <!-- CONTACT -->
 ## Contact
 
-Your Name - [@your_twitter](https://twitter.com/your_username) - email@example.com
+Emmanuel Oloyede - [@itechemmy](https://twitter.com/itechemmy)
 
-Project Link: [https://github.com/your_username/repo_name](https://github.com/your_username/repo_name)
+Project Link: [https://github.com/techemmy/Linear-Foonda](https://github.com/techemmy/Linear-Foonda)
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+<p align="right">(<a href="#linear-foonda">back to top</a>)</p>
