@@ -107,6 +107,14 @@ describe("Handle invalid equations", () => {
         }).toThrow("Invalid linear equation");
     });
 
+    test("2xx = 4 throws an invalid equation error", () => {
+        const equation = "2xx = 4";
+        const solver = new LinearEquation(equation);
+        expect(() => {
+            solver.solve(equation);
+        }).toThrow(/Invalid/);
+    });
+
     test("x = x  throws a no solution error", () => {
         const equation = "x = x";
         const solver = new LinearEquation(equation);
