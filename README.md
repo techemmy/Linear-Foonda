@@ -6,7 +6,6 @@ The app helps students solve algebraic equations with step-by-step guide.
 ![GitHub forks](https://img.shields.io/github/forks/techemmy/Linear-Foonda?style=for-the-badge)
 ![Stargazers](https://img.shields.io/github/stars/techemmy/Linear-Foonda?style=for-the-badge)
 ![Issues](https://img.shields.io/github/issues/techemmy/Linear-Foonda?style=for-the-badge)
-![Twitter Follow](https://img.shields.io/twitter/follow/itechemmy?style=social)
 
 <!-- TABLE OF CONTENTS -->
 <details>
